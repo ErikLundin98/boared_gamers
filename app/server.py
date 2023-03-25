@@ -83,8 +83,9 @@ def add_member():
     name = request.form.get('name')
     join_date = request.form.get('join_date')
     picture_file = request.files.get("profile_picture").read()
-    if member := Member.get(name=name):
-        member.set(join_date=join_date, profile_picture=picture_file)
+    existing_member = Member.get(name=name)
+    if existing_member:
+        existing_member.set(join_date=join_date, profile_picture=picture_file)
     else:
         Member(name=name, join_date=join_date, profile_picture=picture_file)
     return input_page()
@@ -112,9 +113,9 @@ def add_session_result():
     member = request.form.get('member')
     place = request.form.get('place')
     score = request.form.get('score')
-
-    if session_result := SessionResult.get(session=session, member=member):
-        session_result.set(place=place, score=score)
+    existing_session_result = SessionResult.get(session=session, member=member)
+    if existing_session_result:
+        existing_session_result.set(place=place, score=score)
     else:
         SessionResult(session=session, member=member, place=place, score=score)
     return input_page()
