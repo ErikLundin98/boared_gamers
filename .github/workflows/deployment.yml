@@ -10,6 +10,6 @@ jobs:
       - name: install_preprequisites
         run: sudo apt-get install sshpass
       - name: install
-        run: sshpass -p ${HOST_PASSWORD} ${HOST_ADDRESS} 'bash -s' < deploy_scripts/install.sh
+        run: sshpass -p ${HOST_PASSWORD} ssh -o StrictHostKeyChecking=no ${HOST_ADDRESS} 'bash -s' < deploy_scripts/install.sh
       - name: run
-        run: sshpass -p ${HOST_PASSWORD} ${HOST_ADDRESS} 'bash -s' < deploy_scripts/run.sh
+        run: sshpass -p ${HOST_PASSWORD} ssh -o StrictHostKeyChecking=no ${HOST_ADDRESS} 'bash -s' < deploy_scripts/run.sh
