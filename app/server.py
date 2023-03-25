@@ -21,7 +21,7 @@ app.config.update(dict(
     DEBUG = True,
     PONY = {
         'provider': 'sqlite',
-        'filename': "db.db",
+        'filename': DATABASE_PATH,
         'create_db': True
     }
 ))
