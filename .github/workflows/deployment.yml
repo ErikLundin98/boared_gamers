@@ -6,10 +6,11 @@ jobs:
   test_schedule:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: install_preprequisites
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install prerequisites
         run: sudo apt-get install sshpass
-      - name: install
-        run: sshpass -p ${HOST_PASSWORD} ssh ${HOST_ADDRESS} 'bash -s' < deploy_scripts/install.sh
-      - name: run
-        run: sshpass -p ${HOST_PASSWORD} ssh ${HOST_ADDRESS} 'bash -s' < deploy_scripts/run.sh
+      - name: Install environment
+        run: sshpass -p ${{secrets.HOST_PASSWORD}} ssh ${{secrets.HOST_ADDRESS}} 'bash -s' < ./deploy_scripts/install.sh
+      - name: Run
+        run: sshpass -p ${{secrets.HOST_PASSWORD}} ssh ${{secrets.HOST_ADDRESS}} 'bash -s' < ./deploy_scripts/run.sh
