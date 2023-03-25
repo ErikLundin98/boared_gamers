@@ -4,13 +4,15 @@ on: push
 
 jobs:
   test_schedule:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install prerequisites
-        run: sudo apt-get install sshpass
-      - name: Install environment
-        run: sshpass -p ${{secrets.HOST_PASSWORD}} ssh ${{secrets.HOST_ADDRESS}} 'bash -s' < ./deploy_scripts/install.sh
-      - name: Run
-        run: sshpass -p ${{secrets.HOST_PASSWORD}} ssh ${{secrets.HOST_ADDRESS}} 'bash -s' < ./deploy_scripts/run.sh
+      - name: install
+        run: |
+          test -d venv || python3 -m venv venv
+          source venv/bin/activate
+          make install_unix
+
+      - name: run
+        run: python3 -m app

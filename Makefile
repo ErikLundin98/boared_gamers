@@ -1,5 +1,4 @@
 DBDIR := db
-VENVDIR = := venv
 
 install_unix: 
 	test -d $(DBDIR) || mkdir $(DBDIR)
