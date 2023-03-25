@@ -15,4 +15,6 @@ jobs:
           make install_unix
 
       - name: run
-        run: python3 -m app
+        run: |
+          source venv/bin/activate
+          python3 -m app
