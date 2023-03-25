@@ -1,0 +1,73 @@
+{# templates/add_data.html #}
+
+{% extends "base.html" %}
+
+{% block main_content %}
+<h3>Lägg till spelare</h3>
+
+<form action="/input/member" enctype="multipart/form-data" method="post">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name"><br>
+    <label for="join_date">Date joined:</label><br>
+    <input type="date" id="join_date" name="join_date" value="{{date}}">
+    <label for="profile_picture">Profile picture:</label><br>
+    <input type="file" id="profile_picture" name="profile_picture"><br>
+    <input type="submit" value="Add">
+</form>
+
+<h3>Lägg till spel</h3>
+
+<form action="/input/game", method="post">
+    <label for="game">Name of game</label><br>
+    <input type="text" id="game" name="game"><br>
+    <label for="type">Genre</label><br>
+    <input type="text" id="type" name="type"><br>
+    <input type="submit" value="Add">
+</form>
+
+
+<h3>Lägg till session</h3>
+
+<form action="/input/session", method="post">
+    <label for="game">Game</label><br>
+    <select id="game" name="game">
+        {% for game in games %}
+            <option value="{{game}}">{{game}}</option>
+        {% endfor %}
+    </select><br>
+    <label for="host">Host</label><br>
+    <select id="host" name="host">
+        {% for member in members %}
+            <option value="{{member}}">{{member}}</option>
+        {% endfor %}
+    </select><br>
+    <label for="date">Date of session:</label><br>
+    <input type="date" id="date" name="date" value="{{date}}">
+    <input type="submit" value="Add">
+</form>
+
+
+<h3>Lägg till resultat för session</h3>
+
+<form action="/input/session_result", method="post">
+    <label for="session">Session</label><br>
+    <select id="session" name="session">
+        {% for session in sessions %}
+            <option value="{{session['id']}}">{{session["game"]["name"]}} hos {{session["host"]["name"]}}, datum {{session["date"]}}</option>
+        {% endfor %}
+    </select><br>
+    <label for="session">Member</label><br>
+    <select id="member" name="member">
+        {% for member in members %}
+            <option value="{{member}}">{{member}}</option>
+        {% endfor %}
+    </select><br>
+    <label for="place">Placement</label><br>
+    <input type="number" id="place" name="place"><br>
+    <label for="score">Points</label><br>
+    <input type="number" id="score" name="score"><br>
+    <input type="submit" value="Add">
+</form>
+
+
+{% endblock main_content %}

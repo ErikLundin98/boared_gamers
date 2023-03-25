@@ -1,0 +1,21 @@
+{# templates/base.html #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <title>Boared gamers</title>
+</head>
+
+<body>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/input">Add entries</a></li>
+        </ul>
+    </nav>
+    {% block main_content %}
+    {% endblock main_content %}
+</body>
+</html>
