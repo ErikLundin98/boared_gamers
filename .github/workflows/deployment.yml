@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v2
       - name: install
         run: |
-          test -d venv || python3 -m venv venv
+          python3 -m venv venv
           source venv/bin/activate
           make install_unix
 
