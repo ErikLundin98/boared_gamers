@@ -16,5 +16,5 @@ jobs:
 
       - name: run
         run: |
-          source venv/bin/activate
-          python3 -m app
+          screen -ls | awk -vFS='\t|[.]' '/board_app/ {system("screen -S "$2" -X quit")}'
+          screen -dm bash -S board_app -c 'source venv/bin/activate && python3 -m app'
