@@ -10,7 +10,11 @@ jobs:
         uses: actions/checkout@v2
       - name: build
         run: docker build -t boared_app .
-      - name: stop_existing
-        run: docker stop $(docker ps -q --filter ancestor=boared_app ) || true
+      - name: create_volume_if_not_exists
+        run: docker volume create vol
+      - name: stop_and_rm_existing
+        run: |
+          docker stop boared_container | true
+          docker rm boared_container | true
       - name: run
-        run: docker run -d -p 5000:5000 boared_app
+        run: docker run --name boared_container --mount source=vol,target=/db -d -p 5000:5000 boared_app
