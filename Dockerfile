@@ -9,5 +9,5 @@ RUN pip install -r requirements.txt
 # Bundle app source
 COPY . .
 RUN mkdir -p /db
-EXPOSE 5000
+EXPOSE 5000:5000
 CMD [ "python", "-m", "app"]

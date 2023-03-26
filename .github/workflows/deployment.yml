@@ -6,16 +6,11 @@ jobs:
   test_schedule:
     runs-on: self-hosted
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v2
-      # - name: install
-      #   run: |
-      #     python3 -m venv venv
-      #     source venv/bin/activate
-      #     make install_unix
-
-      # - name: run
-      #   run: |
-      #     screen -ls | awk -vFS='\t|[.]' '/board_app/ {system("screen -S "$2" -X quit")}'
-      #     screen -dm bash -S board_app -c 'source venv/bin/activate && python3 -m app'
-          
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: build
+        run: docker build -t boared_app .
+      - name: stop_existing
+        run: docker stop $(docker ps -q --filter ancestor=boared_app ) || true
+      - name: run
+        run: docker run -d -p 5000:5000 boared_app
