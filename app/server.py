@@ -33,29 +33,27 @@ Pony(app)
 @app.route("/")
 def home():
     sql = (
-        "SELECT member, SUM(score) as score, ROW_NUMBER() OVER() as rank, "
+        "SELECT member, SUM(score) as score, "
         "COUNT(*) as number_sessions "
         "FROM SessionResult "
         "GROUP BY member "
         "ORDER BY score DESC"
     )
     leaderboard = [
-        {"name": row[0], "score": row[1], "rank": row[2], "number_sessions": row[3]}
+        {"name": row[0], "score": row[1], "number_sessions": row[2]}
         for row in db.select(sql)
     ]
-    images = []
     for i, member in enumerate([l["name"] for l in leaderboard]):
         picture = (
             base64.standard_b64encode(Member[member].profile_picture).decode("utf-8")
         )
         leaderboard[i]["profile_picture"] = picture
-        images.append(picture)
+        leaderboard[i]["rank"] = i + 1
 
     return render_template(
         "home.html", 
         title="Board gamers",
         leaderboard=leaderboard,
-        images=images
     )
 
 @app.route("/input")
