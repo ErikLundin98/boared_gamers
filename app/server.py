@@ -5,7 +5,7 @@ from flask import (
 )
 from datetime import date
 from pony.flask import Pony
-from pony.orm import select
+from pony.orm import select, sum, count, desc
 from app.constants import DATABASE_PATH
 from app.database import (
     db,
@@ -32,17 +32,15 @@ Pony(app)
 
 @app.route("/")
 def home():
-    sql = (
-        "SELECT member, SUM(score) as score, "
-        "COUNT(*) as number_sessions "
-        "FROM SessionResult "
-        "GROUP BY member "
-        "ORDER BY score DESC"
-    )
     leaderboard = [
         {"name": row[0], "score": row[1], "number_sessions": row[2]}
-        for row in db.select(sql)
+        for row in
+        select(
+            (group.member.name, sum(group.score), count(group))
+            for group in SessionResult
+        ).order_by(desc(1))
     ]
+    
     for i, member in enumerate([l["name"] for l in leaderboard]):
         picture = (
             base64.standard_b64encode(Member[member].profile_picture).decode("utf-8")
