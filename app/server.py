@@ -122,8 +122,8 @@ def _get_leaderboard():
             base64.standard_b64encode(Member[member].profile_picture).decode("utf-8")
         )
         leaderboard[i]["profile_picture"] = picture
-        leaderboard[i]["rank"] = rank
         rank = rank + 1 if leaderboard[i]["score"] < last_score else rank
+        leaderboard[i]["rank"] = rank
         last_score = leaderboard[i]["score"]
 
     return leaderboard
