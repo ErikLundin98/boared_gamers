@@ -32,32 +32,13 @@ Pony(app)
 
 @app.route("/")
 def home():
-    leaderboard = [
-        {"name": row[0], "score": row[1], "number_sessions": row[2]}
-        for row in
-        select(
-            (group.member.name, sum(group.score), count(group))
-            for group in SessionResult
-        ).order_by(
-            -2 # order by score desc.
-        )
-    ]
-    print(leaderboard)
-    rank = 1
-    last_score = -1
-    for i, member in enumerate([l["name"] for l in leaderboard]):
-        picture = (
-            base64.standard_b64encode(Member[member].profile_picture).decode("utf-8")
-        )
-        leaderboard[i]["profile_picture"] = picture
-        leaderboard[i]["rank"] = rank
-        rank = rank + 1 if leaderboard[i]["score"] < last_score else rank
-        last_score = leaderboard[i]["score"]
-
+    leaderboard = _get_leaderboard()
+    upcoming_sessions = _get_upcoming_sessions()
     return render_template(
         "home.html", 
         title="Board gamers",
         leaderboard=leaderboard,
+        upcoming_sessions=upcoming_sessions,
     )
 
 @app.route("/input")
@@ -121,3 +102,43 @@ def add_session_result():
     else:
         SessionResult(session=session, member=member, place=place, score=score)
     return input_page()
+
+def _get_leaderboard():
+    """Get leaderboard of player scores."""
+    leaderboard = [
+        {"name": row[0], "score": row[1], "number_sessions": row[2]}
+        for row in
+        select(
+            (group.member.name, sum(group.score), count(group))
+            for group in SessionResult
+        ).order_by(
+            -2 # order by score desc.
+        )
+    ]
+    rank = 1
+    last_score = -1
+    for i, member in enumerate([l["name"] for l in leaderboard]):
+        picture = (
+            base64.standard_b64encode(Member[member].profile_picture).decode("utf-8")
+        )
+        leaderboard[i]["profile_picture"] = picture
+        leaderboard[i]["rank"] = rank
+        rank = rank + 1 if leaderboard[i]["score"] < last_score else rank
+        last_score = leaderboard[i]["score"]
+
+    return leaderboard
+
+def _get_upcoming_sessions():
+    """Get information on coming sessions"""
+    current_date = date.today()
+    query = select(
+        (s.date, s.host.name, s.game.name) 
+        for s in Session 
+        if s.date >= current_date
+    )
+    upcoming_sessions = [
+        {"date": session[0], "host": session[1], "game": session[2]}
+        for session in query
+    ]
+    print(upcoming_sessions)
+    return upcoming_sessions

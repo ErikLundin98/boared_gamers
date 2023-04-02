@@ -23,4 +23,20 @@
     {% endfor %}
   
 </table>
+<h1>Upcoming sessions</h1>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Host</th>
+    <th>Game</th>
+  </tr>
+  {% for row in upcoming_sessions %}
+  <tr>
+    <td>{{row["date"]}}</td>
+    <td>{{row["host"]}}</td>
+    <td>{{row["game"]}}</td>
+  </tr>
+  {% endfor %}
+
+</table>
 {% endblock main_content %}
