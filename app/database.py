@@ -10,6 +10,17 @@ class Member(db.Entity):
     hosted_sessions = Set("Session")
     session_results = Set("SessionResult")
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):   
+        return True           
+
+    def is_anonymous(self):
+        return False          
+
+    def get_id(self):         
+        return str(self.name)
 
 class Game(db.Entity):
     name = PrimaryKey(str)

@@ -11,8 +11,10 @@
 <body>
     <nav class="navbar">
         <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/input">Add entries</a></li>
+            <li class="navbar-left"><a href="/">Home</a></li>
+            <li class="navbar-left"><a href="/input">Add entries</a></li>
+            <li class="navbar-left"><a href="/login">Login</a></li>
+            <li class="navbar-right">Välkommen {{user_info}}</li>
         </ul>
     </nav>
     {% block main_content %}

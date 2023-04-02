@@ -1,0 +1,22 @@
+{# templates/login.html #}
+
+{% extends "base.html" %}
+
+{% block main_content %}
+<h3>Logga in</h3>
+
+<form action="/login" enctype="multipart/form-data" method="post">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name"><br>
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password"><br>
+    <input type="submit" value="log in">
+</form>
+
+<h3>{{message}}</h3>
+
+<form action="/logout"method="post">
+    <input type="submit" value="log out">
+</form>
+
+{% endblock main_content %}

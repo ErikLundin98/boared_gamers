@@ -1,2 +1,4 @@
 Flask
 pony
+flask-login
+python-dotenv

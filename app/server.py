@@ -3,9 +3,16 @@ from flask import (
     render_template,
     request,
 )
+from flask_login.login_manager import LoginManager
+from flask_login import (
+    login_required, 
+    login_user, 
+    logout_user,
+    current_user,
+)
 from datetime import date
 from pony.flask import Pony
-from pony.orm import select, count, desc
+from pony.orm import select, count
 from app.constants import DATABASE_PATH
 from app.database import (
     db,
@@ -15,6 +22,7 @@ from app.database import (
     SessionResult,
 )
 import base64
+import os
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -23,8 +31,11 @@ app.config.update(dict(
         'provider': 'sqlite',
         'filename': DATABASE_PATH,
         'create_db': True
-    }
+    },
+    SECRET_KEY = os.getenv("PASSWORD"),
 ))
+login_manager = LoginManager(app=app)
+
 db.bind(**app.config["PONY"])
 db.generate_mapping(create_tables=True)
 
@@ -39,6 +50,40 @@ def home():
         title="Board gamers",
         leaderboard=leaderboard,
         upcoming_sessions=upcoming_sessions,
+        user_info=_get_user_info(),
+    )
+
+@login_manager.user_loader
+def load_user(name):
+    return Member.get(name=name)
+
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    message = "Du är inte inloggad"
+    if current_user.is_authenticated:
+        message = f"Du är redan inloggad som {current_user.get_id()}"
+
+    if request.method == "POST":
+        password = request.form.get('password')
+        name = request.form.get('name')
+        member = Member.get(name=name)
+        if member and password is not None and password == app.config["SECRET_KEY"]:
+            login_user(member, remember=True)
+            message = "Du är nu inloggad"
+        else:
+            message = "Felaktigt användarnamn/lösenord"
+    
+    return render_template(
+        "login.html", message=message, user_info=_get_user_info(),
+    )
+
+@app.route("/logout", methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    return render_template(
+        "login.html", message="Du är nu utloggad", user_info=_get_user_info(),
     )
 
 @app.route("/input")
@@ -59,9 +104,11 @@ def input_page():
         games=games,
         members=members,
         sessions=sessions,
+        user_info=_get_user_info(),
     )
 
 @app.route("/input/member", methods=["POST"])
+@login_required
 def add_member():
     name = request.form.get('name')
     join_date = request.form.get('join_date')
@@ -74,6 +121,7 @@ def add_member():
     return input_page()
 
 @app.route("/input/game", methods=["POST"])
+@login_required
 def add_game():
     game = request.form.get('game')
     type = request.form.get('type')
@@ -81,6 +129,7 @@ def add_game():
     return input_page()
 
 @app.route("/input/session", methods=["POST"])
+@login_required
 def add_session():
     game = request.form.get('game')
     date = request.form.get('date')
@@ -91,6 +140,7 @@ def add_session():
 
 
 @app.route("/input/session_result", methods=["POST"])
+@login_required
 def add_session_result():
     session = request.form.get('session')
     member = request.form.get('member')
@@ -142,3 +192,7 @@ def _get_upcoming_sessions():
     ]
     print(upcoming_sessions)
     return upcoming_sessions
+
+def _get_user_info():
+    """Get user welcome message"""
+    return current_user.get_id() or "nonexistent"

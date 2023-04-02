@@ -22,11 +22,7 @@ tr:hover {background-color: #726060;}
     background-color: #485193;
 }
     
-.navbar li {
-    float: left;
-}
-    
-.navbar li a {
+.navbar li a, .navbar-right {
     display: block;
     color: white;
     text-align: center;
@@ -37,6 +33,13 @@ tr:hover {background-color: #726060;}
 /* Change the link color to #111 (black) on hover */
 .navbar li a:hover {
     background-color: #111;
+}
+
+.navbar-right {
+    float: right;
+}
+.navbar-left {
+    float: left;
 }
 
 input, select {
