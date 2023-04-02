@@ -3,7 +3,7 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-<h3>Lägg till spelare</h3>
+<h3>Add member</h3>
 
 <form action="/input/member" enctype="multipart/form-data" method="post">
     <label for="name">Name:</label><br>
@@ -15,10 +15,10 @@
     <input type="submit" value="Add">
 </form>
 
-<h3>Lägg till spel</h3>
+<h3>Add game</h3>
 
 <form action="/input/game", method="post">
-    <label for="game">Name of game</label><br>
+    <label for="game">Name</label><br>
     <input type="text" id="game" name="game"><br>
     <label for="type">Genre</label><br>
     <input type="text" id="type" name="type"><br>
@@ -26,7 +26,7 @@
 </form>
 
 
-<h3>Lägg till session</h3>
+<h3>Add session</h3>
 
 <form action="/input/session", method="post">
     <label for="game">Game</label><br>
@@ -47,13 +47,13 @@
 </form>
 
 
-<h3>Lägg till resultat för session</h3>
+<h3>Add session result</h3>
 
 <form action="/input/session_result", method="post">
     <label for="session">Session</label><br>
     <select id="session" name="session">
         {% for session in sessions %}
-            <option value="{{session['id']}}">{{session["game"]["name"]}} hos {{session["host"]["name"]}}, datum {{session["date"]}}</option>
+            <option value="{{session['id']}}">{{session["game"]["name"]}} at {{session["host"]["name"]}}'s place, {{session["date"]}}</option>
         {% endfor %}
     </select><br>
     <label for="session">Member</label><br>

@@ -43,6 +43,7 @@ Pony(app)
 
 @app.route("/")
 def home():
+    """Load home page."""
     leaderboard = _get_leaderboard()
     upcoming_sessions = _get_upcoming_sessions()
     return render_template(
@@ -55,14 +56,16 @@ def home():
 
 @login_manager.user_loader
 def load_user(name):
+    """Load user."""
     return Member.get(name=name)
 
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
-    message = "Du är inte inloggad"
+    """Log in user."""
+    message = "You are not logged in"
     if current_user.is_authenticated:
-        message = f"Du är redan inloggad som {current_user.get_id()}"
+        message = f"You are already logged in as {current_user.get_id()}"
 
     if request.method == "POST":
         password = request.form.get('password')
@@ -70,9 +73,9 @@ def login():
         member = Member.get(name=name)
         if member and password is not None and password == app.config["SECRET_KEY"]:
             login_user(member, remember=True)
-            message = "Du är nu inloggad"
+            message = "You are now logged in."
         else:
-            message = "Felaktigt användarnamn/lösenord"
+            message = "Incorrect username/password"
     
     return render_template(
         "login.html", message=message, user_info=_get_user_info(),
@@ -81,13 +84,15 @@ def login():
 @app.route("/logout", methods=["POST"])
 @login_required
 def logout():
+    """Log out user"""
     logout_user()
     return render_template(
-        "login.html", message="Du är nu utloggad", user_info=_get_user_info(),
+        "login.html", message="You are now logged out", user_info=_get_user_info(),
     )
 
 @app.route("/input")
 def input_page():
+    """Input page to add game data."""
     games = list(select(
         game.name for game in Game
     ))
@@ -110,6 +115,7 @@ def input_page():
 @app.route("/input/member", methods=["POST"])
 @login_required
 def add_member():
+    """Add member to db."""
     name = request.form.get('name')
     join_date = request.form.get('join_date')
     picture_file = request.files.get("profile_picture").read()
@@ -123,6 +129,7 @@ def add_member():
 @app.route("/input/game", methods=["POST"])
 @login_required
 def add_game():
+    """Add game to db."""
     game = request.form.get('game')
     type = request.form.get('type')
     Game(name=game, type=type)
@@ -131,6 +138,7 @@ def add_game():
 @app.route("/input/session", methods=["POST"])
 @login_required
 def add_session():
+    """Add session to db."""
     game = request.form.get('game')
     date = request.form.get('date')
     host = request.form.get('host')
@@ -142,6 +150,7 @@ def add_session():
 @app.route("/input/session_result", methods=["POST"])
 @login_required
 def add_session_result():
+    """Add result to session in db."""
     session = request.form.get('session')
     member = request.form.get('member')
     place = request.form.get('place')
@@ -179,7 +188,7 @@ def _get_leaderboard():
     return leaderboard
 
 def _get_upcoming_sessions():
-    """Get information on coming sessions"""
+    """Get information on coming sessions."""
     current_date = date.today()
     query = select(
         (s.date, s.host.name, s.game.name) 
@@ -190,9 +199,8 @@ def _get_upcoming_sessions():
         {"date": session[0], "host": session[1], "game": session[2]}
         for session in query
     ]
-    print(upcoming_sessions)
     return upcoming_sessions
 
 def _get_user_info():
-    """Get user welcome message"""
+    """Get user welcome message."""
     return current_user.get_id() or "nonexistent"
