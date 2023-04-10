@@ -41,5 +41,5 @@ class SessionResult(db.Entity):
     session = Required(Session)
     member = Required(Member)
     place = Required(int)
-    score = Required(int)
+    score = Required(float)
     composite_key(session, member)
