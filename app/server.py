@@ -21,9 +21,11 @@ from app.database import (
     Session,
     SessionResult,
 )
+from dotenv import load_dotenv
 import base64
 import os
 
+load_dotenv()
 app = Flask(__name__)
 app.config.update(dict(
     DEBUG = True,
@@ -38,7 +40,6 @@ login_manager = LoginManager(app=app)
 
 db.bind(**app.config["PONY"])
 db.generate_mapping(create_tables=True)
-
 Pony(app)
 
 @app.route("/")
