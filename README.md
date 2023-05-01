@@ -2,7 +2,9 @@
 
 ## Installation
 
-With make:
+You need an environment variable `PASSWORD` set. This can be placed in a `.env` file in the base dir.
+
+Installation with make:
 ```
 make install_unix
 make install_windows
