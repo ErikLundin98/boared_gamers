@@ -1,3 +1,4 @@
+from typing import Dict
 from flask import (
     Flask,
     render_template,
@@ -24,6 +25,7 @@ from app.database import (
 from dotenv import load_dotenv
 import base64
 import os
+import trueskill
 
 load_dotenv()
 app = Flask(__name__)
@@ -54,6 +56,33 @@ def home():
         upcoming_sessions=upcoming_sessions,
         user_info=_get_user_info(),
     )
+
+
+def get_trueskill_ratings() -> Dict[Member, trueskill.Rating]:
+    """Get trueskill ratings based on previous results."""
+
+    ratings = {}
+    for member in select(member.name for member in Member):
+        ratings[member] = trueskill.Rating()
+
+    for session in select(session for session in Session).order_by(Session.date):
+        # in each session, create a game with all present players
+        # get ordered list of players based on standings
+        ordered_results = list(
+            select((result.member.name, result.place) for result in SessionResult if result.session == session).order_by(2)
+        )
+        if len(ordered_results) < 2:
+            continue
+        ordered_members = [result[0] for result in ordered_results]
+        ordered_ratings = [ratings[member] for member in ordered_members]
+        game = [(rating,) for rating in ordered_ratings]
+        new_ratings = [new_rating[0] for new_rating in trueskill.rate(game)]
+
+        for member, new_rating in zip(ordered_members, new_ratings):
+            ratings[member] = new_rating
+        
+    return ratings
+    
 
 @login_manager.user_loader
 def load_user(name):
@@ -114,7 +143,6 @@ def input_page():
     )
 
 @app.route("/input/member", methods=["POST"])
-@login_required
 def add_member():
     """Add member to db."""
     name = request.form.get('name')
@@ -177,15 +205,18 @@ def _get_leaderboard():
     ]
     rank = 1
     last_score = -1
+
+    trueskill_ratings = get_trueskill_ratings()
     for i, member in enumerate([l["name"] for l in leaderboard]):
         picture = (
             base64.standard_b64encode(Member[member].profile_picture).decode("utf-8")
         )
+        leaderboard[i]["trueskill_rating"] = round(trueskill.expose(trueskill_ratings[member]), 2)
         leaderboard[i]["profile_picture"] = picture
         rank = rank + 1 if leaderboard[i]["score"] < last_score else rank
         leaderboard[i]["rank"] = rank
         last_score = leaderboard[i]["score"]
-
+    print(leaderboard)
     return leaderboard
 
 def _get_upcoming_sessions():

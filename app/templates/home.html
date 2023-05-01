@@ -11,6 +11,7 @@
       <th>Points</th>
       <th>Rank</th>
       <th>Sessions</th>
+      <th>ELO</th>
     </tr>
     {% for row in leaderboard %}
     <tr>
@@ -19,6 +20,7 @@
       <td>{{row["score"]}}</td>
       <td>{{row["rank"]}}</td>
       <td>{{row["number_sessions"]}}</td>
+      <td>{{row["trueskill_rating"]}}</td>
     </tr>
     {% endfor %}
   
